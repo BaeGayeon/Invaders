@@ -8,6 +8,7 @@ import java.util.List;
 import engine.Cooldown;
 import engine.Core;
 import engine.GameState;
+import engine.MusicManager;
 import engine.Score;
 
 /**
@@ -100,7 +101,7 @@ public class ScoreScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
-
+		MusicManager.runMain(MusicManager.BgmType.GameBgm);
 		draw();
 		if (this.inputDelay.checkFinished()) {
 			if (inputManager.isKeyDown(KeyEvent.VK_ESCAPE)) {

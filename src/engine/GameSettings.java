@@ -64,5 +64,4 @@ public class GameSettings {
 	public final int getShootingFrecuency() {
 		return shootingFrecuency;
 	}
-
 }

@@ -58,5 +58,4 @@ public class Score implements Comparable<Score> {
 				.getScore() ? -1 : 0;
 		return comparison;
 	}
-
 }

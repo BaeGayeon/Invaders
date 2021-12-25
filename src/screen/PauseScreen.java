@@ -3,6 +3,7 @@ package screen;
 import java.awt.event.KeyEvent;
 
 import engine.Core;
+import engine.MusicManager;
 import engine.Cooldown;
 
 public class PauseScreen extends Screen {
@@ -46,10 +47,10 @@ public class PauseScreen extends Screen {
 	 */
     protected final void update() {
 		super.update();
-
+		MusicManager.runMain(MusicManager.BgmType.GameBgm);
 		// 화면에서 옵션 선택 메뉴 구현
 		draw();
- 
+
 		if (this.selectionCooldown.checkFinished()
 				&& this.inputDelay.checkFinished()) {
 			if (inputManager.isKeyDown(KeyEvent.VK_UP)
@@ -72,16 +73,16 @@ public class PauseScreen extends Screen {
 
 				return;
 			}
-
-
 		}
     }
 
+	/**
+	 * Shifts the focus to the next menu item.
+	 */
     private void nextMenuItem() {
 		 if (this.returnCode == 7) {
 			this.returnCode = 1;
 		}	
-
 	}
 
 	/**
@@ -91,7 +92,6 @@ public class PauseScreen extends Screen {
 		if (this.returnCode == 1) {
 			this.returnCode = 7;
 		}	
-
 	}
 
     /**

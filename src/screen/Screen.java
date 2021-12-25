@@ -43,6 +43,7 @@ public class Screen {
 	/** What kind of screen goes next. */
 	protected int returnCode;
 
+
 	/**
 	 * Constructor, establishes the properties of the screen.
 	 * 
@@ -99,10 +100,9 @@ public class Screen {
 		return 0;
 	}
 
-
 	protected void update() {
-	}
 
+	}
 	/**
 	 * Getter for screen width.
 	 * 

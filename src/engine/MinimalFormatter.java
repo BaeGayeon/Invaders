@@ -31,5 +31,4 @@ public class MinimalFormatter extends Formatter {
 
 		return output.toString();
 	}
-
 }

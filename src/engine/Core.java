@@ -1,19 +1,11 @@
 package engine;
 
+import entity.Ship;
+import screen.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import screen.GameScreen;
-import screen.HighScoreScreen;
-import screen.SettingScreen;
-import screen.ScoreScreen;
-import screen.Screen;
-import screen.TitleScreen;
+import java.util.logging.*;
 
 /**
  * Implements core game logic.
@@ -28,7 +20,7 @@ public final class Core {
 	/** Height of current screen. */
 	private static final int HEIGHT = 780;
 	/** Max fps of current screen. */
-	private static final int FPS = 60;
+	private static final int FPS = 90;
 
 	/** Max lives. */
 	private static final int MAX_LIVES = 3;
@@ -39,25 +31,25 @@ public final class Core {
 	
 	/** Difficulty settings for level 1. */
 	private static final GameSettings SETTINGS_LEVEL_1 =
-			new GameSettings(5, 4, 60, 2000);
+			new GameSettings(5, 5, 60, 2000);
 	/** Difficulty settings for level 2. */
 	private static final GameSettings SETTINGS_LEVEL_2 =
-			new GameSettings(5, 5, 50, 2500);
+			new GameSettings(7, 7, 50, 2500);
 	/** Difficulty settings for level 3. */
 	private static final GameSettings SETTINGS_LEVEL_3 =
-			new GameSettings(6, 5, 40, 1500);
+			new GameSettings(9, 9, 40, 1500);
 	/** Difficulty settings for level 4. */
 	private static final GameSettings SETTINGS_LEVEL_4 =
-			new GameSettings(6, 6, 30, 1500);
+			new GameSettings(11, 11, 30, 1500);
 	/** Difficulty settings for level 5. */
 	private static final GameSettings SETTINGS_LEVEL_5 =
-			new GameSettings(7, 6, 20, 1000);
+			new GameSettings(11, 11, 20, 1000);
 	/** Difficulty settings for level 6. */
 	private static final GameSettings SETTINGS_LEVEL_6 =
-			new GameSettings(7, 7, 10, 1000);
+			new GameSettings(11, 11, 10, 1000);
 	/** Difficulty settings for level 7. */
 	private static final GameSettings SETTINGS_LEVEL_7 =
-			new GameSettings(8, 7, 2, 500);
+			new GameSettings(11, 11, 2, 500);
 	
 	/** Frame to draw the screen on. */
 	private static Frame frame;
@@ -72,6 +64,7 @@ public final class Core {
 	private static Handler fileHandler;
 	/** Logger handler for printing to console. */
 	private static ConsoleHandler consoleHandler;
+
 
 
 	/**
@@ -130,6 +123,7 @@ public final class Core {
 				break;
 			case 2:
 				// Game & score.
+				Ship ship = new Ship(width / 2, height - 30);
 				do {
 					// One extra live every few levels.
 					boolean bonusLife = gameState.getLevel()
@@ -138,7 +132,7 @@ public final class Core {
 					
 					currentScreen = new GameScreen(gameState,
 							gameSettings.get(gameState.getLevel() - 1),
-							bonusLife, width, height, FPS);
+							bonusLife, width, height, FPS, ship);
 					LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 							+ " game screen at " + FPS + " fps.");
 					returnCode = frame.setScreen(currentScreen);
@@ -154,7 +148,6 @@ public final class Core {
 					if(returnCode != 2) {
 						break;
 					}
-
 
 				} while (gameState.getLivesRemaining() > 0
 						&& gameState.getLevel() <= NUM_LEVELS);
@@ -189,27 +182,30 @@ public final class Core {
 				LOGGER.info("Closing setting screen.");
 				break;
 			case 5:
-				// Mute or Audio Setting
-				// not yet
-				// currentScreen = new AudioScreen(width, height, FPS);
-				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
-				+ " Audio screen at " + FPS + " fps.");
+				LOGGER.info("Mute / Unmute Audio");
+				MusicManager.toggleIsMute();
 				returnCode = frame.setScreen(currentScreen);
-				LOGGER.info("Closing Audio screen.");				
 				break;
 			case 6:
-				// Video Setting? fps? something
-				// not yet
-				// currentScreen = new VideoScreen(width, height, FPS);
+				// Ship Selecting.
+				currentScreen = new ShipScreen(width, height, FPS);
 				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
 				+ " Video screen at " + FPS + " fps.");
 				returnCode = frame.setScreen(currentScreen);
 				LOGGER.info("Closing Video screen.");
 				break;
+      		case 7:
+        		// Help.
+				currentScreen = new HelpScreen(width, height, FPS);
+				LOGGER.info("Starting " + WIDTH + "x" + HEIGHT
+						+ " help screen at " + FPS + " fps.");
+				returnCode = frame.setScreen(currentScreen);
+				LOGGER.info("Closing help screen.");
+				break;
+
 			default:
 				break;
 			}
-
 		} while (returnCode != 0);
 
 		fileHandler.flush();

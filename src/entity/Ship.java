@@ -6,6 +6,7 @@ import java.util.Set;
 import engine.Cooldown;
 import engine.Core;
 import engine.DrawManager.SpriteType;
+import screen.ShipScreen;
 
 /**
  * Implements a ship, to be controlled by the player.
@@ -16,13 +17,19 @@ import engine.DrawManager.SpriteType;
 public class Ship extends Entity {
 
 	/** Time between shots. */
-	private int SHOOTING_INTERVAL = 750;
+	private int shooting_interval = 750;
 	/** Speed of the bullets shot by the ship. */
-	private int BULLET_SPEED = -6;
+	private int bullet_speed = -6;
 	/** Movement of the ship for each unit of time. */
-	private int SPEED = 2;
+	private int ship_speed = 2;
 	/** The number of bullets ship shoots at once. */
 	private int num_of_bullets = 1;
+
+	private int shipcode = 1;
+
+	private static final int UNIT_INTERVAL = 150;
+	private static final int UNIT_SHIP_SPEED = 1;
+	private static final int UNIT_BULLET_SPEED = 2;
 	
 	/** Minimum time between shots. */
 	private Cooldown shootingCooldown;
@@ -39,9 +46,17 @@ public class Ship extends Entity {
 	 */
 	public Ship(final int positionX, final int positionY) {
 		super(positionX, positionY, 13 * 2, 8 * 2, Color.GREEN);
-
-		this.spriteType = SpriteType.Ship;
-		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
+		ShipScreen shipscreen = new ShipScreen(width, height, 60);
+		this.shipcode = shipscreen.getShipCode();
+		if(this.shipcode == 1) {
+			this.spriteType = SpriteType.Ship;
+		} else if (this.shipcode == 2) {
+			this.spriteType = SpriteType.Ship2;
+		} else if (this.shipcode == 3) {
+			this.spriteType = SpriteType.Ship3;
+		}
+		
+		this.shootingCooldown = Core.getCooldown(shooting_interval);
 		this.destructionCooldown = Core.getCooldown(1000);
 	}
 
@@ -50,7 +65,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveRight() {
-		this.positionX += SPEED;
+		this.positionX += ship_speed;
 	}
 
 	/**
@@ -58,7 +73,7 @@ public class Ship extends Entity {
 	 * reached.
 	 */
 	public final void moveLeft() {
-		this.positionX -= SPEED;
+		this.positionX -= ship_speed;
 	}
 
 	/**
@@ -72,25 +87,25 @@ public class Ship extends Entity {
 		if (this.shootingCooldown.checkFinished() && this.num_of_bullets == 1) {
 			this.shootingCooldown.reset();
 			bullets.add(BulletPool.getBullet(positionX + this.width / 2,
-					positionY, BULLET_SPEED));
+					positionY, bullet_speed,positionX));
 			return true;
 		}
 		else if (this.shootingCooldown.checkFinished() && this.num_of_bullets == 2) {
 			this.shootingCooldown.reset();
 			bullets.add(BulletPool.getBullet(positionX,
-					positionY, BULLET_SPEED));
+					positionY, bullet_speed,positionX));
 			bullets.add(BulletPool.getBullet(positionX + this.width,
-					positionY, BULLET_SPEED));
+					positionY, bullet_speed,positionX));
 			return true;
 		}
 		else if (this.shootingCooldown.checkFinished() && this.num_of_bullets == 3) {
 			this.shootingCooldown.reset();
 			bullets.add(BulletPool.getBullet(positionX - 10,
-					positionY, BULLET_SPEED));
+					positionY, bullet_speed,positionX));
 			bullets.add(BulletPool.getBullet(positionX + this.width / 2,
-					positionY, BULLET_SPEED));
+					positionY, bullet_speed,positionX));
 			bullets.add(BulletPool.getBullet(positionX + this.width + 10,
-					positionY, BULLET_SPEED));
+					positionY, bullet_speed,positionX));
 			return true;
 		}
 		return false;
@@ -102,8 +117,15 @@ public class Ship extends Entity {
 	public final void update() {
 		if (!this.destructionCooldown.checkFinished())
 			this.spriteType = SpriteType.ShipDestroyed;
-		else
-			this.spriteType = SpriteType.Ship;
+		else {
+			if(this.shipcode == 1) {
+				this.spriteType = SpriteType.Ship;
+			} else if (this.shipcode == 2) {
+				this.spriteType = SpriteType.Ship2;
+			} else if (this.shipcode == 3) {
+				this.spriteType = SpriteType.Ship3;
+			}
+		}
 	}
 
 	/**
@@ -128,7 +150,7 @@ public class Ship extends Entity {
 	 * @return Speed of the ship.
 	 */
 	public final int getSpeed() {
-		return SPEED;
+		return ship_speed;
 	}
 
 	/**
@@ -145,7 +167,7 @@ public class Ship extends Entity {
 	 * 
 	 */
 	public final void increase_Speed() {
-		this.SPEED += 1;
+		this.ship_speed += UNIT_SHIP_SPEED;
 	}
 
 	/**
@@ -153,8 +175,8 @@ public class Ship extends Entity {
 	 * 
 	 */
 	public final void decrease_Speed() {
-		if(SPEED > 1) {
-			this.SPEED -= 1;
+		if(ship_speed > UNIT_SHIP_SPEED) {
+			this.ship_speed -= UNIT_SHIP_SPEED;
 		}
 	}
 
@@ -163,7 +185,7 @@ public class Ship extends Entity {
 	 * 
 	 */
 	public final void increase_BulletSpeed() {
-		this.BULLET_SPEED -= 2;
+		this.bullet_speed -= UNIT_BULLET_SPEED;
 	}
 
 	/**
@@ -171,8 +193,8 @@ public class Ship extends Entity {
 	 * 
 	 */
 	public final void decrease_BulletSpeed() {
-		if(BULLET_SPEED < -2) {
-			this.BULLET_SPEED += 2;
+		if(bullet_speed < -UNIT_BULLET_SPEED) {
+			this.bullet_speed += UNIT_BULLET_SPEED;
 		}
 	}
 
@@ -181,10 +203,10 @@ public class Ship extends Entity {
 	 * as a result, ship shoot faster.
 	 */
 	public final void decrease_Interval() {
-		if(SHOOTING_INTERVAL > 150) {
-			this.SHOOTING_INTERVAL -= 150;
+		if(shooting_interval > UNIT_INTERVAL) {
+			this.shooting_interval -= UNIT_INTERVAL;
 		}
-		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
+		this.shootingCooldown = Core.getCooldown(shooting_interval);
 	}
 
 	/**
@@ -193,8 +215,8 @@ public class Ship extends Entity {
 	 * 
 	 */
 	public final void increase_Interval() {
-		this.SHOOTING_INTERVAL += 150;
-		this.shootingCooldown = Core.getCooldown(SHOOTING_INTERVAL);
+		this.shooting_interval += UNIT_INTERVAL;
+		this.shootingCooldown = Core.getCooldown(shooting_interval);
 	}
 
 	/**
@@ -213,5 +235,9 @@ public class Ship extends Entity {
 	public final void decrease_Numofbullets() {
 		if(num_of_bullets > 1)
 			this.num_of_bullets -= 1;
+	}
+
+	public final void changeShipcode() {
+		this.shipcode = 3;
 	}
 }

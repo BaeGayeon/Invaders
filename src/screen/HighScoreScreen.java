@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import engine.Core;
+import engine.MusicManager;
 import engine.Score;
 
 /**
@@ -47,6 +48,7 @@ public class HighScoreScreen extends Screen {
 	 */
 	public final int run() {
 		super.run();
+
 		draw();
 		return this.returnCode;
 	}
@@ -56,7 +58,7 @@ public class HighScoreScreen extends Screen {
 	 */
 	protected final void update() {
 		super.update();
-
+		MusicManager.runMain(MusicManager.BgmType.MainBgm);
 		draw();
 		if (inputManager.isKeyDown(KeyEvent.VK_SPACE)
 				&& this.inputDelay.checkFinished())

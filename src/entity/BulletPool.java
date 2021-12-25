@@ -35,7 +35,7 @@ public final class BulletPool {
 	 * @return Requested bullet.
 	 */
 	public static Bullet getBullet(final int positionX,
-			final int positionY, final int speed) {
+			final int positionY, final int speed,final int shooterPositionX) {
 		Bullet bullet;
 		if (!pool.isEmpty()) {
 			bullet = pool.iterator().next();
@@ -44,8 +44,9 @@ public final class BulletPool {
 			bullet.setPositionY(positionY);
 			bullet.setSpeed(speed);
 			bullet.setSprite();
+			bullet.setShooterPositionX(shooterPositionX);
 		} else {
-			bullet = new Bullet(positionX, positionY, speed);
+			bullet = new Bullet(positionX, positionY, speed, shooterPositionX);
 			bullet.setPositionX(positionX - bullet.getWidth() / 2);
 		}
 		return bullet;
@@ -58,6 +59,10 @@ public final class BulletPool {
 	 *            Bullets to recycle.
 	 */
 	public static void recycle(final Set<Bullet> bullet) {
-		pool.addAll(bullet);
+		for (Bullet b : bullet) {
+			if (!(b instanceof RewardBullet)){
+				pool.add(b);
+			}
+		}
 	}
 }

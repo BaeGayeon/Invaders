@@ -3,12 +3,13 @@ package screen;
 import java.awt.event.KeyEvent;
 
 import engine.Core;
+import engine.MusicManager;
 import engine.Cooldown;
 
 public class SettingScreen extends Screen {
 
     /** Milliseconds between changes in user selection. */
-	private static final int SELECTION_TIME = 200;
+	private static final int SELECTION_TIME = 500;
 	
 	/** Time between changes in user selection. */
 	private Cooldown selectionCooldown;
@@ -47,7 +48,7 @@ public class SettingScreen extends Screen {
 	 */
     protected final void update() {
 		super.update();
-
+		MusicManager.runMain(MusicManager.BgmType.MainBgm);
         draw();
 		if (this.selectionCooldown.checkFinished()
 				&& this.inputDelay.checkFinished()) {
@@ -61,12 +62,16 @@ public class SettingScreen extends Screen {
 				nextMenuItem();
 				this.selectionCooldown.reset();
 			}
-			if (inputManager.isKeyDown(KeyEvent.VK_SPACE))
+			if (inputManager.isKeyDown(KeyEvent.VK_SPACE)){
+				this.selectionCooldown.reset();
 				this.isRunning = false;
+			}
 		}
     }
 
-	// 1 5
+	/**
+	 * Shifts the focus to the next menu item.
+	 */
     private void nextMenuItem() {
 		if (this.returnCode == 6) {
 			this.returnCode = 1;
